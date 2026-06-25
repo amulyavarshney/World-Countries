@@ -12,34 +12,74 @@ export default function ListPage() {
   const { countries, status, error, filters } = useCountries();
   const { dispatch } = useCountriesContext();
 
-  useEffect(() => {
-    document.title = 'World Countries';
-  }, []);
+  useEffect(() => { document.title = 'World Countries'; }, []);
 
   const hasActiveFilters = filters.searchTerm || filters.region || filters.language || filters.currency;
+  const activeCount = [filters.region, filters.language, filters.currency].filter(Boolean).length;
 
   return (
     <PageWrapper>
+      {/* Hero */}
+      <div className="mb-8">
+        <h1 className="text-white font-bold text-[40px] sm:text-[52px] tracking-[-0.04em] leading-none mb-2">
+          World Countries
+        </h1>
+        <p className="text-white/40 text-[15px] tracking-[-0.01em]">
+          Browse, search, and explore every country on Earth.
+        </p>
+      </div>
+
       {/* Filter bar */}
-      <div className="flex flex-wrap gap-3 mb-8 items-center">
+      <div className="flex flex-wrap items-center gap-2 mb-8">
+        {/* Search — takes remaining space */}
         <SearchBar />
-        <RegionFilter />
-        <LanguageFilter />
-        <CurrencyFilter />
+
+        {/* Divider */}
+        <div
+          className="hidden sm:block h-5 w-px mx-1 shrink-0"
+          style={{ background: 'rgba(255,255,255,0.10)' }}
+          aria-hidden="true"
+        />
+
+        {/* Filter chips — grouped */}
+        <div
+          className="filter-group flex items-center gap-1 p-1 rounded-[13px]"
+          style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.08)' }}
+        >
+          <RegionFilter />
+          <LanguageFilter />
+          <CurrencyFilter />
+        </div>
+
+        {/* Active filter count + clear */}
         {hasActiveFilters && (
           <button
             onClick={() => dispatch({ type: 'RESET_FILTERS' })}
-            className="glass glass-hover px-4 py-3 rounded-xl text-white/70 text-sm font-medium transition-all duration-200 cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3 py-[9px] rounded-xl text-[13px] font-medium cursor-pointer transition-all duration-150"
+            style={{
+              background: 'rgba(239,68,68,0.12)',
+              border: '0.5px solid rgba(239,68,68,0.25)',
+              color: 'rgba(252,165,165,0.90)',
+            }}
           >
-            ✕ Clear
+            {activeCount > 0 && (
+              <span
+                className="flex items-center justify-center w-[16px] h-[16px] rounded-full text-[10px] font-bold"
+                style={{ background: 'rgba(239,68,68,0.30)' }}
+              >
+                {activeCount}
+              </span>
+            )}
+            Clear
           </button>
         )}
       </div>
 
-      {/* Results count */}
-      {status === 'success' && (
-        <p className="text-white/40 text-sm mb-6">
-          {countries.length} {countries.length === 1 ? 'country' : 'countries'} found
+      {/* Count */}
+      {status === 'success' && countries.length > 0 && (
+        <p className="text-[12px] font-medium uppercase tracking-[0.07em] mb-6"
+           style={{ color: 'rgba(255,255,255,0.20)' }}>
+          {countries.length.toLocaleString()} {countries.length === 1 ? 'country' : 'countries'}
         </p>
       )}
 

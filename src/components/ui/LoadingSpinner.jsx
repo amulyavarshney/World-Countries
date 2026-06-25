@@ -1,10 +1,8 @@
 export default function LoadingSpinner({ size = 'md' }) {
-  const sizes = { sm: 'w-6 h-6', md: 'w-12 h-12', lg: 'w-20 h-20' };
+  const sizes = { sm: 'w-5 h-5', md: 'w-10 h-10', lg: 'w-14 h-14' };
   return (
-    <div className="flex justify-center items-center py-20">
-      <div
-        className={`${sizes[size]} rounded-full border-4 border-white/20 border-t-white animate-spin`}
-      />
+    <div className="flex justify-center items-center py-24">
+      <div className={`${sizes[size]} rounded-full border-2 border-white/10 border-t-white/60 animate-spin`} />
     </div>
   );
 }

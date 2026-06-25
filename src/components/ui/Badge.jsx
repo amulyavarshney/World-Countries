@@ -1,18 +1,18 @@
 export default function Badge({ children, onClick, className = '' }) {
+  const base = `inline-flex items-center px-3 py-[5px] rounded-full text-[12px] font-medium tracking-[-0.01em] border transition-all duration-150 ${className}`;
+
   if (onClick) {
     return (
       <button
         onClick={onClick}
-        className={`glass glass-hover px-3 py-1 rounded-full text-white/80 text-xs font-medium transition-all duration-200 cursor-pointer border border-white/20 ${className}`}
+        className={`${base} glass glass-hover text-white/70 border-white/10 cursor-pointer hover:text-white`}
       >
         {children}
       </button>
     );
   }
   return (
-    <span
-      className={`glass px-3 py-1 rounded-full text-white/80 text-xs font-medium border border-white/20 ${className}`}
-    >
+    <span className={`${base} glass text-white/70 border-white/10`}>
       {children}
     </span>
   );

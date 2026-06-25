@@ -40,82 +40,98 @@ export default function CountryDetail({ cca3 }) {
   const languages = formatLanguages(country.languages);
   const currencies = formatCurrencies(country.currencies);
   const borders = country.borders || [];
+  const flagSrc = country.flags?.png || country.flags?.svg;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-3xl mx-auto">
+      {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="glass glass-hover px-5 py-2 rounded-xl text-white font-medium text-sm mb-8 transition-all duration-200 cursor-pointer flex items-center gap-2"
+        className="glass glass-hover flex items-center gap-1.5 px-4 py-[7px] rounded-full text-[13px] font-medium text-white/80 mb-8 cursor-pointer transition-all duration-150"
       >
-        ← Back
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+        Back
       </button>
 
-      <div className="glass-strong rounded-3xl overflow-hidden shadow-2xl">
-        {/* Flag */}
-        <div className="aspect-video sm:aspect-[2/1] overflow-hidden">
+      <div className="glass-strong rounded-3xl overflow-hidden">
+        {/* Flag hero */}
+        <div className="aspect-[2/1] overflow-hidden">
           <img
-            src={country.flags?.svg || country.flags?.png}
+            src={flagSrc}
             alt={country.flags?.alt || `Flag of ${name}`}
             className="w-full h-full object-cover"
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement.innerHTML =
+                `<span style="display:flex;align-items:center;justify-content:center;height:100%;font-size:5rem">${country.flag || '🏳️'}</span>`;
+            }}
           />
         </div>
 
-        <div className="p-8">
-          <h1 className="text-white font-bold text-3xl sm:text-4xl mb-2 text-shadow">{name}</h1>
-          {nativeName && nativeName !== name && (
-            <p className="text-white/50 text-lg mb-6">Native: {nativeName}</p>
-          )}
-
-          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-3 mb-8">
-            <DetailRow label="Population" value={formatPopulation(country.population)} />
-            <DetailRow label="Region" value={country.region} />
-            <DetailRow label="Subregion" value={country.subregion} />
-            <DetailRow label="Capital" value={country.capital?.join(', ')} />
-            <DetailRow label="Top Level Domain" value={formatTLD(country.tld)} />
-            <DetailRow label="UN Member" value={country.unMember ? 'Yes' : 'No'} />
+        <div className="p-8 sm:p-10">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-white font-bold text-[32px] sm:text-[38px] tracking-[-0.03em] leading-tight mb-1">
+              {name}
+            </h1>
+            {nativeName && nativeName !== name && (
+              <p className="text-white/40 text-[15px] tracking-[-0.01em]">{nativeName}</p>
+            )}
           </div>
 
-          {languages.length > 0 && (
-            <div className="mb-6">
-              <p className="text-white/50 text-sm font-medium mb-2">Languages</p>
-              <div className="flex flex-wrap gap-2">
+          {/* Stats grid */}
+          <div className="grid sm:grid-cols-2 gap-x-12 gap-y-4 mb-10 pb-10 border-b border-white/8">
+            <Stat label="Population" value={formatPopulation(country.population)} />
+            <Stat label="Capital" value={country.capital?.join(', ')} />
+            <Stat label="Region" value={country.region} />
+            <Stat label="Subregion" value={country.subregion} />
+            <Stat label="Top Level Domain" value={formatTLD(country.tld)} />
+            <Stat label="UN Member" value={country.unMember ? 'Yes' : 'No'} />
+          </div>
+
+          {/* Badges */}
+          <div className="space-y-6">
+            {languages.length > 0 && (
+              <Section label="Languages">
                 {languages.map(l => <Badge key={l}>{l}</Badge>)}
-              </div>
-            </div>
-          )}
-
-          {currencies.length > 0 && (
-            <div className="mb-6">
-              <p className="text-white/50 text-sm font-medium mb-2">Currencies</p>
-              <div className="flex flex-wrap gap-2">
+              </Section>
+            )}
+            {currencies.length > 0 && (
+              <Section label="Currencies">
                 {currencies.map(c => <Badge key={c}>{c}</Badge>)}
-              </div>
-            </div>
-          )}
-
-          {borders.length > 0 && (
-            <div>
-              <p className="text-white/50 text-sm font-medium mb-2">Border Countries</p>
-              <div className="flex flex-wrap gap-2">
+              </Section>
+            )}
+            {borders.length > 0 && (
+              <Section label="Borders">
                 {borders.map(code => (
-                  <Badge key={code} onClick={() => navigate(`/country/${code}`)}>
-                    {code}
-                  </Badge>
+                  <Badge key={code} onClick={() => navigate(`/country/${code}`)}>{code}</Badge>
                 ))}
-              </div>
-            </div>
-          )}
+              </Section>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function DetailRow({ label, value }) {
+function Stat({ label, value }) {
   return (
-    <div className="flex gap-2 text-sm">
-      <span className="text-white/50 font-medium">{label}:</span>
-      <span className="text-white/80">{value || 'N/A'}</span>
+    <div>
+      <p className="text-white/40 text-[11px] font-semibold uppercase tracking-[0.07em] mb-0.5">{label}</p>
+      <p className="text-white/90 text-[15px] font-medium tracking-[-0.01em]">{value || '—'}</p>
+    </div>
+  );
+}
+
+function Section({ label, children }) {
+  return (
+    <div>
+      <p className="text-white/40 text-[11px] font-semibold uppercase tracking-[0.07em] mb-2">{label}</p>
+      <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
 }

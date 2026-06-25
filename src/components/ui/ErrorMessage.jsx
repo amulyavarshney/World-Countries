@@ -1,15 +1,15 @@
 export default function ErrorMessage({ message, onRetry }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="glass rounded-2xl px-8 py-6 text-center max-w-md">
-        <p className="text-red-300 text-lg font-medium mb-2">Something went wrong</p>
-        <p className="text-white/60 text-sm mb-4">{message}</p>
+    <div className="flex justify-center py-24">
+      <div className="glass rounded-2xl px-10 py-8 text-center max-w-sm">
+        <p className="text-white font-semibold text-[17px] tracking-[-0.01em] mb-1">Something went wrong</p>
+        <p className="text-white/40 text-[13px] mb-6">{message}</p>
         {onRetry && (
           <button
             onClick={onRetry}
-            className="glass glass-hover px-4 py-2 rounded-xl text-white text-sm font-medium transition-all duration-200 cursor-pointer"
+            className="btn-accent px-5 py-[8px] rounded-full text-[13px] cursor-pointer"
           >
-            Try again
+            Try Again
           </button>
         )}
       </div>

@@ -3,68 +3,66 @@ import { formatPopulation, formatLanguages, formatCurrencies } from '../../utils
 
 export default function CountryCard({ country }) {
   const name = country.name?.common || 'Unknown';
-  const capital = country.capital?.[0] || 'N/A';
+  const capital = country.capital?.[0] || '—';
   const languages = formatLanguages(country.languages).slice(0, 2);
   const currencies = formatCurrencies(country.currencies).slice(0, 1);
-
-  // Use PNG as primary — more reliable across browsers than SVG from flagcdn.com
   const flagSrc = country.flags?.png || country.flags?.svg;
   const flagAlt = country.flags?.alt || `Flag of ${name}`;
 
   return (
-    <article className="glass glass-hover rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col">
-      <div className="aspect-video overflow-hidden bg-white/5 flex items-center justify-center">
+    <article className="glass rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_12px_40px_rgba(0,0,0,0.35)] group">
+      {/* Flag */}
+      <div className="aspect-[3/2] overflow-hidden bg-white/5">
         <img
           src={flagSrc}
           alt={flagAlt}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           loading="lazy"
           onError={e => {
             e.currentTarget.onerror = null;
             e.currentTarget.style.display = 'none';
             e.currentTarget.parentElement.innerHTML =
-              `<span style="font-size:3rem;line-height:1">${country.flag || '🏳️'}</span>`;
+              `<span style="display:flex;align-items:center;justify-content:center;height:100%;font-size:3.5rem">${country.flag || '🏳️'}</span>`;
           }}
         />
       </div>
 
-      <div className="p-5 flex flex-col gap-3 flex-1">
-        <h2 className="text-white font-bold text-lg leading-tight text-shadow">{name}</h2>
+      {/* Content */}
+      <div className="p-5 flex flex-col gap-4 flex-1">
+        <div>
+          <h2 className="text-white font-semibold text-[17px] tracking-[-0.02em] mb-0.5">{name}</h2>
+          <p className="text-white/40 text-[12px] font-medium uppercase tracking-[0.06em]">{country.region || ''}</p>
+        </div>
 
-        <dl className="space-y-1 text-sm flex-1">
-          <div className="flex gap-1">
-            <dt className="text-white/50 font-medium">Population:</dt>
-            <dd className="text-white/80">{formatPopulation(country.population)}</dd>
-          </div>
-          <div className="flex gap-1">
-            <dt className="text-white/50 font-medium">Region:</dt>
-            <dd className="text-white/80">{country.region || 'N/A'}</dd>
-          </div>
-          <div className="flex gap-1">
-            <dt className="text-white/50 font-medium">Capital:</dt>
-            <dd className="text-white/80">{capital}</dd>
-          </div>
+        <dl className="space-y-[6px] flex-1">
+          {country.population > 0 && (
+            <Row label="Population" value={formatPopulation(country.population)} />
+          )}
+          <Row label="Capital" value={capital} />
           {languages.length > 0 && (
-            <div className="flex gap-1 flex-wrap">
-              <dt className="text-white/50 font-medium">Languages:</dt>
-              <dd className="text-white/80">{languages.join(', ')}{Object.keys(country.languages || {}).length > 2 ? '…' : ''}</dd>
-            </div>
+            <Row label="Language" value={languages.join(', ') + (Object.keys(country.languages || {}).length > 2 ? '…' : '')} />
           )}
           {currencies.length > 0 && (
-            <div className="flex gap-1">
-              <dt className="text-white/50 font-medium">Currency:</dt>
-              <dd className="text-white/80">{currencies[0]}</dd>
-            </div>
+            <Row label="Currency" value={currencies[0]} />
           )}
         </dl>
 
         <Link
           to={`/country/${country.cca3}`}
-          className="mt-2 block text-center glass glass-hover px-4 py-2 rounded-xl text-white text-sm font-medium transition-all duration-200 border border-white/20"
+          className="btn-accent block text-center py-[9px] px-4 rounded-[10px] text-[13px] font-medium"
         >
-          View More →
+          View Details
         </Link>
       </div>
     </article>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <div className="flex justify-between items-baseline gap-3 text-[13px]">
+      <dt className="text-white/40 font-medium shrink-0">{label}</dt>
+      <dd className="text-white/80 text-right truncate">{value}</dd>
+    </div>
   );
 }
