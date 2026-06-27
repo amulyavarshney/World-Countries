@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { fetchAllCountries } from '../api/countries';
+import { useFavorites } from '../hooks/useFavorites';
 
 const CountriesContext = createContext(null);
 
@@ -40,6 +41,7 @@ function reducer(state, action) {
 
 export function CountriesProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const favoritesApi = useFavorites();
 
   // Fetch all countries once on mount
   useEffect(() => {
@@ -50,7 +52,7 @@ export function CountriesProvider({ children }) {
   }, []);
 
   return (
-    <CountriesContext.Provider value={{ state, dispatch }}>
+    <CountriesContext.Provider value={{ state, dispatch, ...favoritesApi }}>
       {children}
     </CountriesContext.Provider>
   );

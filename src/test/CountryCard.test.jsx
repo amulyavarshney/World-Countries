@@ -1,13 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { CountriesProvider } from '../context/CountriesContext';
 import CountryCard from '../components/country/CountryCard';
 import { mockGermany, mockJapan } from './fixtures';
 
 function renderCard(country) {
   return render(
     <MemoryRouter>
-      <CountryCard country={country} />
+      <CountriesProvider>
+        <CountryCard country={country} />
+      </CountriesProvider>
     </MemoryRouter>
   );
 }

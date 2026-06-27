@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCountries } from '../hooks/useCountries';
 import { useCountriesContext } from '../context/CountriesContext';
@@ -12,8 +12,9 @@ import PageWrapper from '../components/layout/PageWrapper';
 
 export default function ListPage() {
   const { countries, status, error, filters, sort } = useCountries();
-  const { dispatch } = useCountriesContext();
+  const { dispatch, isFavorite } = useCountriesContext();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [favOnly, setFavOnly] = useState(false);
   const didInit = useRef(false);
 
   useEffect(() => { document.title = 'World Countries'; }, []);
@@ -49,6 +50,7 @@ export default function ListPage() {
 
   const hasActiveFilters = filters.searchTerm || filters.region || filters.language || filters.currency;
   const activeCount = [filters.region, filters.language, filters.currency].filter(Boolean).length;
+  const visibleCountries = favOnly ? countries.filter(c => isFavorite(c.cca3)) : countries;
 
   return (
     <PageWrapper>
@@ -87,6 +89,25 @@ export default function ListPage() {
         {/* Sort */}
         <SortControl />
 
+        {/* Favorites toggle */}
+        <button
+          onClick={() => setFavOnly(v => !v)}
+          aria-pressed={favOnly}
+          aria-label="Show favorites only"
+          className="flex items-center gap-1.5 px-3 py-[9px] rounded-xl text-[13px] font-medium cursor-pointer transition-all duration-150"
+          style={{
+            background: favOnly ? 'rgba(251,191,36,0.18)' : 'rgba(255,255,255,0.06)',
+            border: favOnly ? '1px solid rgba(251,191,36,0.45)' : '0.5px solid rgba(255,255,255,0.10)',
+            color: favOnly ? 'rgba(253,230,138,0.95)' : 'rgba(255,255,255,0.55)',
+            fontWeight: favOnly ? '500' : '400',
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill={favOnly ? '#fbbf24' : 'none'} stroke={favOnly ? '#fbbf24' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          Favorites
+        </button>
+
         {/* Active filter count + clear */}
         {hasActiveFilters && (
           <button
@@ -112,14 +133,15 @@ export default function ListPage() {
       </div>
 
       {/* Count */}
-      {status === 'success' && countries.length > 0 && (
+      {status === 'success' && visibleCountries.length > 0 && (
         <p className="text-[12px] font-medium uppercase tracking-[0.07em] mb-6"
            style={{ color: 'rgba(255,255,255,0.20)' }}>
-          {countries.length.toLocaleString()} {countries.length === 1 ? 'country' : 'countries'}
+          {visibleCountries.length.toLocaleString()} {visibleCountries.length === 1 ? 'country' : 'countries'}
+          {favOnly && ' · favorites'}
         </p>
       )}
 
-      <CountryGrid countries={countries} status={status} error={error} />
+      <CountryGrid countries={visibleCountries} status={status} error={error} />
     </PageWrapper>
   );
 }
