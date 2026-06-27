@@ -13,10 +13,10 @@ export default function SearchBar() {
     dispatch({ type: 'SET_FILTER', payload: { searchTerm: debounced } });
   }, [debounced, dispatch]);
 
-  // Sync if external reset clears the filter
+  // Sync local value when context changes externally (URL hydration or reset)
   useEffect(() => {
-    if (state.filters.searchTerm === '' && value !== '') setValue('');
-  }, [state.filters.searchTerm]);
+    if (state.filters.searchTerm !== value) setValue(state.filters.searchTerm);
+  }, [state.filters.searchTerm]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div

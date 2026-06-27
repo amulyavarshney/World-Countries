@@ -15,14 +15,12 @@ export default function ListPage() {
   const { dispatch, isFavorite } = useCountriesContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const [favOnly, setFavOnly] = useState(false);
-  const didInit = useRef(false);
+  const [didInit, setDidInit] = useState(false);
 
   useEffect(() => { document.title = 'World Countries'; }, []);
 
   // On first mount, hydrate context from URL params
   useEffect(() => {
-    if (didInit.current) return;
-    didInit.current = true;
     const q = searchParams.get('q') || '';
     const region = searchParams.get('region') || '';
     const language = searchParams.get('language') || '';
@@ -34,11 +32,12 @@ export default function ListPage() {
     if (sortParam !== 'name-asc') {
       dispatch({ type: 'SET_SORT', payload: sortParam });
     }
+    setDidInit(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Write filters + sort back to URL whenever they change
+  // Write filters + sort back to URL whenever they change (only after hydration)
   useEffect(() => {
-    if (!didInit.current) return;
+    if (!didInit) return;
     const params = {};
     if (filters.searchTerm) params.q = filters.searchTerm;
     if (filters.region)     params.region = filters.region;
@@ -46,7 +45,7 @@ export default function ListPage() {
     if (filters.currency)   params.currency = filters.currency;
     if (sort !== 'name-asc') params.sort = sort;
     setSearchParams(params, { replace: true });
-  }, [filters, sort, setSearchParams]);
+  }, [filters, sort, didInit, setSearchParams]);
 
   const hasActiveFilters = filters.searchTerm || filters.region || filters.language || filters.currency;
   const activeCount = [filters.region, filters.language, filters.currency].filter(Boolean).length;
@@ -134,8 +133,7 @@ export default function ListPage() {
 
       {/* Count */}
       {status === 'success' && visibleCountries.length > 0 && (
-        <p className="text-[12px] font-medium uppercase tracking-[0.07em] mb-6"
-           style={{ color: 'rgba(255,255,255,0.20)' }}>
+        <p className="text-white/20 text-[12px] font-medium uppercase tracking-[0.07em] mb-6">
           {visibleCountries.length.toLocaleString()} {visibleCountries.length === 1 ? 'country' : 'countries'}
           {favOnly && ' · favorites'}
         </p>
