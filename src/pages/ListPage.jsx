@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCountries } from '../hooks/useCountries';
 import { useCountriesContext } from '../context/CountriesContext';
 import CountryGrid from '../components/country/CountryGrid';
@@ -10,10 +11,41 @@ import SortControl from '../components/filters/SortControl';
 import PageWrapper from '../components/layout/PageWrapper';
 
 export default function ListPage() {
-  const { countries, status, error, filters } = useCountries();
+  const { countries, status, error, filters, sort } = useCountries();
   const { dispatch } = useCountriesContext();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const didInit = useRef(false);
 
   useEffect(() => { document.title = 'World Countries'; }, []);
+
+  // On first mount, hydrate context from URL params
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+    const q = searchParams.get('q') || '';
+    const region = searchParams.get('region') || '';
+    const language = searchParams.get('language') || '';
+    const currency = searchParams.get('currency') || '';
+    const sortParam = searchParams.get('sort') || 'name-asc';
+    if (q || region || language || currency) {
+      dispatch({ type: 'SET_FILTER', payload: { searchTerm: q, region, language, currency } });
+    }
+    if (sortParam !== 'name-asc') {
+      dispatch({ type: 'SET_SORT', payload: sortParam });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Write filters + sort back to URL whenever they change
+  useEffect(() => {
+    if (!didInit.current) return;
+    const params = {};
+    if (filters.searchTerm) params.q = filters.searchTerm;
+    if (filters.region)     params.region = filters.region;
+    if (filters.language)   params.language = filters.language;
+    if (filters.currency)   params.currency = filters.currency;
+    if (sort !== 'name-asc') params.sort = sort;
+    setSearchParams(params, { replace: true });
+  }, [filters, sort, setSearchParams]);
 
   const hasActiveFilters = filters.searchTerm || filters.region || filters.language || filters.currency;
   const activeCount = [filters.region, filters.language, filters.currency].filter(Boolean).length;
