@@ -6,6 +6,7 @@ import SearchBar from '../components/filters/SearchBar';
 import RegionFilter from '../components/filters/RegionFilter';
 import LanguageFilter from '../components/filters/LanguageFilter';
 import CurrencyFilter from '../components/filters/CurrencyFilter';
+import SortControl from '../components/filters/SortControl';
 import PageWrapper from '../components/layout/PageWrapper';
 
 export default function ListPage() {
@@ -50,6 +51,9 @@ export default function ListPage() {
           <LanguageFilter />
           <CurrencyFilter />
         </div>
+
+        {/* Sort */}
+        <SortControl />
 
         {/* Active filter count + clear */}
         {hasActiveFilters && (

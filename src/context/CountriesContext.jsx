@@ -14,6 +14,7 @@ const initialState = {
     language: '',
     currency: '',
   },
+  sort: 'name-asc',
 };
 
 function reducer(state, action) {
@@ -28,8 +29,10 @@ function reducer(state, action) {
       return { ...state, status: 'error', error: action.payload };
     case 'SET_FILTER':
       return { ...state, filters: { ...state.filters, ...action.payload } };
+    case 'SET_SORT':
+      return { ...state, sort: action.payload };
     case 'RESET_FILTERS':
-      return { ...state, filters: initialState.filters, countries: state.allCountries };
+      return { ...state, filters: initialState.filters, sort: initialState.sort, countries: state.allCountries };
     default:
       return state;
   }
