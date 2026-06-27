@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { CountriesProvider } from '../context/CountriesContext';
 import CountryDetail from '../components/country/CountryDetail';
 import { mockCountries } from './fixtures';
 import { _clearCache } from '../api/countries';
@@ -14,7 +15,9 @@ beforeEach(() => {
 function renderDetail(cca3) {
   return render(
     <MemoryRouter>
-      <CountryDetail cca3={cca3} />
+      <CountriesProvider>
+        <CountryDetail cca3={cca3} />
+      </CountriesProvider>
     </MemoryRouter>
   );
 }
@@ -59,9 +62,10 @@ describe('CountryDetail', () => {
   it('renders border country badges', async () => {
     renderDetail('DEU');
     await waitFor(() => {
+      // AUT and BEL not in mock data — fall back to code; FRA resolves to "France"
       expect(screen.getByText('AUT')).toBeInTheDocument();
       expect(screen.getByText('BEL')).toBeInTheDocument();
-      expect(screen.getByText('FRA')).toBeInTheDocument();
+      expect(screen.getByText('France')).toBeInTheDocument();
     });
   });
 

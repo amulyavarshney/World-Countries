@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchByCode } from '../../api/countries';
+import { useCountriesContext } from '../../context/CountriesContext';
 import {
   formatPopulation,
   formatCurrencies,
@@ -17,6 +18,13 @@ export default function CountryDetail({ cca3 }) {
   const [status, setStatus] = useState('loading');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { state } = useCountriesContext();
+
+  const cca3ToName = useMemo(() => {
+    const map = {};
+    for (const c of state.allCountries) map[c.cca3] = c.name?.common;
+    return map;
+  }, [state.allCountries]);
 
   useEffect(() => {
     setStatus('loading');
@@ -107,7 +115,9 @@ export default function CountryDetail({ cca3 }) {
             {borders.length > 0 && (
               <Section label="Borders">
                 {borders.map(code => (
-                  <Badge key={code} onClick={() => navigate(`/country/${code}`)}>{code}</Badge>
+                  <Badge key={code} onClick={() => navigate(`/country/${code}`)}>
+                    {cca3ToName[code] || code}
+                  </Badge>
                 ))}
               </Section>
             )}
