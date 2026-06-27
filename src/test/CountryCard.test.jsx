@@ -22,7 +22,7 @@ describe('CountryCard', () => {
     renderCard(mockGermany);
     const img = screen.getByAltText('Flag of Germany');
     expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', 'https://flagcdn.com/de.svg');
+    expect(img).toHaveAttribute('src', 'https://flagcdn.com/w320/de.png');
   });
 
   it('renders population formatted with digit separators', () => {
@@ -54,21 +54,21 @@ describe('CountryCard', () => {
     expect(screen.getByText('Euro')).toBeInTheDocument();
   });
 
-  it('renders a View More link pointing to the correct route', () => {
+  it('renders a View Details link pointing to the correct route', () => {
     renderCard(mockGermany);
-    const link = screen.getByRole('link', { name: /view more/i });
+    const link = screen.getByRole('link', { name: /view details/i });
     expect(link).toHaveAttribute('href', '/country/DEU');
   });
 
-  it('shows N/A for missing capital', () => {
+  it('shows em-dash for missing capital', () => {
     const country = { ...mockJapan, capital: undefined };
     renderCard(country);
-    expect(screen.getByText('N/A')).toBeInTheDocument();
+    expect(screen.getByText('—')).toBeInTheDocument();
   });
 
-  it('renders population 0 as 0', () => {
+  it('hides population row when population is 0', () => {
     const country = { ...mockJapan, population: 0 };
     renderCard(country);
-    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.queryByText('Population')).not.toBeInTheDocument();
   });
 });

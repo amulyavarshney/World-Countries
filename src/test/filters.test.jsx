@@ -26,7 +26,7 @@ describe('SearchBar', () => {
 
   it('has correct placeholder text', () => {
     renderWithProvider(<SearchBar />);
-    expect(screen.getByPlaceholderText('Search for a country…')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search countries…')).toBeInTheDocument();
   });
 });
 
@@ -36,9 +36,9 @@ describe('RegionFilter', () => {
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
-  it('shows "All Regions" as default option', () => {
+  it('shows "Region" as default option', () => {
     renderWithProvider(<RegionFilter />);
-    expect(screen.getByDisplayValue('All Regions')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Region')).toBeInTheDocument();
   });
 
   it('renders all region options', () => {

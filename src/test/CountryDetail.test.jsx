@@ -33,14 +33,14 @@ describe('CountryDetail', () => {
 
   it('renders native name', async () => {
     renderDetail('DEU');
-    await waitFor(() => expect(screen.getByText('Native: Deutschland')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Deutschland')).toBeInTheDocument());
   });
 
   it('renders population', async () => {
     renderDetail('DEU');
     await waitFor(() => {
       const popEl = screen.getByText((_, el) =>
-        el?.tagName === 'SPAN' && el.textContent.replace(/[,. ]/g, '') === '82905782'
+        el?.tagName === 'P' && el.textContent.replace(/[,. ]/g, '') === '82905782'
       );
       expect(popEl).toBeInTheDocument();
     });
@@ -67,7 +67,7 @@ describe('CountryDetail', () => {
 
   it('renders the Back button', async () => {
     renderDetail('DEU');
-    await waitFor(() => expect(screen.getByText('← Back')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('Back')).toBeInTheDocument());
   });
 
   it('shows error when country not found (ZZZ not in mock data)', async () => {

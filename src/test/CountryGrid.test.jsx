@@ -35,7 +35,7 @@ describe('CountryGrid', () => {
 
   it('shows empty state when no countries found', () => {
     renderGrid({ countries: [], status: 'success', error: null });
-    expect(screen.getByText('No countries found')).toBeInTheDocument();
+    expect(screen.getByText('No results')).toBeInTheDocument();
   });
 
   it('renders country names in cards', () => {
