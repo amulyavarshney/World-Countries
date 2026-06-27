@@ -19,6 +19,7 @@ export default function LanguageFilter() {
         value={state.filters.language}
         onChange={e => dispatch({ type: 'SET_FILTER', payload: { language: e.target.value } })}
         aria-label="Filter by language"
+        data-active={active ? 'true' : 'false'}
         className="appearance-none pl-3 pr-7 py-[9px] text-[13px] rounded-xl outline-none cursor-pointer transition-all duration-150"
         style={{
           background: active ? 'rgba(99,102,241,0.18)' : 'rgba(255,255,255,0.06)',

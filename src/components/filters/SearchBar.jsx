@@ -25,7 +25,7 @@ export default function SearchBar() {
     >
       {/* Search icon */}
       <svg
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-150"
+        className="search-icon absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-150"
         style={{ color: focused ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.25)' }}
         width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true"
       >
