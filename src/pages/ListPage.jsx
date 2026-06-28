@@ -16,6 +16,8 @@ export default function ListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [favOnly, setFavOnly] = useState(false);
   const [didInit, setDidInit] = useState(false);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 24;
 
   useEffect(() => { document.title = 'World Countries'; }, []);
 
@@ -50,6 +52,16 @@ export default function ListPage() {
   const hasActiveFilters = filters.searchTerm || filters.region || filters.language || filters.currency;
   const activeCount = [filters.region, filters.language, filters.currency].filter(Boolean).length;
   const visibleCountries = favOnly ? countries.filter(c => isFavorite(c.cca3)) : countries;
+  const pagedCountries = visibleCountries.slice(0, page * PAGE_SIZE);
+  const hasMore = pagedCountries.length < visibleCountries.length;
+
+  // Reset to page 1 whenever the filtered set changes
+  const prevVisibleKey = useRef(null);
+  const visibleKey = visibleCountries.map(c => c.cca3).join(',');
+  if (visibleKey !== prevVisibleKey.current) {
+    prevVisibleKey.current = visibleKey;
+    if (page !== 1) setPage(1);
+  }
 
   return (
     <PageWrapper>
@@ -134,12 +146,24 @@ export default function ListPage() {
       {/* Count */}
       {status === 'success' && visibleCountries.length > 0 && (
         <p className="text-white/20 text-[12px] font-medium uppercase tracking-[0.07em] mb-6">
-          {visibleCountries.length.toLocaleString()} {visibleCountries.length === 1 ? 'country' : 'countries'}
+          {pagedCountries.length.toLocaleString()} of {visibleCountries.length.toLocaleString()} {visibleCountries.length === 1 ? 'country' : 'countries'}
           {favOnly && ' · favorites'}
         </p>
       )}
 
-      <CountryGrid countries={visibleCountries} status={status} error={error} />
+      <CountryGrid countries={pagedCountries} status={status} error={error} />
+
+      {/* Load more */}
+      {status === 'success' && hasMore && (
+        <div className="flex justify-center mt-10">
+          <button
+            onClick={() => setPage(p => p + 1)}
+            className="glass glass-hover px-8 py-3 rounded-full text-[14px] font-medium text-white/70 cursor-pointer transition-all duration-150 hover:text-white"
+          >
+            Load more · {visibleCountries.length - pagedCountries.length} remaining
+          </button>
+        </div>
+      )}
     </PageWrapper>
   );
 }
